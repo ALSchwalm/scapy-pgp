@@ -1,5 +1,6 @@
 from scapy.fields import *
 from scapy.packet import *
+from ..enumerations import *
 
 class PGPNewFormatLengthField(Field):
     def __init__(self, name, default):
@@ -7,6 +8,9 @@ class PGPNewFormatLengthField(Field):
 
     def i2m(self, pkt, value):
         #TODO: support partial body length
+
+        if value is None:
+            value = len(pkt.payload)
 
         if value < 192:
             return bytes([value])
@@ -48,18 +52,20 @@ class PGPNewFormatLengthField(Field):
             return s[2:], self.m2i(pkt, s[:2])
         elif value == 255:
             return s[5:], self.m2i(pkt, s[:5])
-        return None
+        assert(False)
 
 class PGPNewFormatPacket(Packet):
     fields_desc = [
-        ByteField("tag", None),
+        BitEnumField("format_version", 0b11, 2,
+                     { 0b10: "Old Format",
+                       0b11: "New Format"}),
+        BitEnumField("tag", None, 6, TAG_STRINGS),
         PGPNewFormatLengthField("length", None),
-        StrLenField("data", "", length_from=lambda pkt:pkt.length)
     ]
 
     def guess_payload_class(self, payload):
-        return PACKET_TAGS[PacketType(self.tag & 0b00111111)]
+        return PACKET_TAGS[PacketType(self.tag)]
 
     def extract_padding(self, s):
         # There is no padding, and the payload is all the data
-        return self.data, None
+        return s[-self.length:], None

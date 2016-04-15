@@ -86,9 +86,7 @@ class PGPOldFormatPacket(Packet):
         BitEnumField("format_version", 0b10, 2,
                      { 0b10: "Old Format",
                        0b11: "New Format"}),
-        BitEnumField("tag", None, 4,
-                     { 8: "PGPCompressedDataPacket",
-                       11: "PGPLiteralDataPacket"}),
+        BitEnumField("tag", None, 4, TAG_STRINGS),
         PGPOldFormatLengthFormatField("length_format", None, 2,
                                       { 0b00: "1 byte",
                                         0b01: "2 bytes",
@@ -98,7 +96,6 @@ class PGPOldFormatPacket(Packet):
     ]
 
     def guess_payload_class(self, payload):
-        print(self.tag)
         return PACKET_TAGS[PacketType(self.tag)]
 
     def extract_padding(self, s):
