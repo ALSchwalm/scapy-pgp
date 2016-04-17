@@ -1,9 +1,8 @@
 from scapy.packet import *
-from .packets import *
+from .packets import PGPNewFormatPacket, PGPOldFormatPacket
+from .tags import *
 from .enumerations import *
 
-
-bind_layers(PGPNewFormatPacket, PGPLiteralDataPacket,
-            {"tag": PacketType.PGPLiteralDataPacket})
-bind_layers(PGPOldFormatPacket, PGPLiteralDataPacket,
-            {"tag": PacketType.PGPLiteralDataPacket})
+for tag, packet in PACKET_TAGS.items():
+    bind_layers(PGPNewFormatPacket, packet, {"tag": tag})
+    bind_layers(PGPOldFormatPacket, packet, {"tag": tag})

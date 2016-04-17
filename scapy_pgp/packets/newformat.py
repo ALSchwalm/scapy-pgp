@@ -1,6 +1,6 @@
 from scapy.fields import *
 from scapy.packet import *
-from ..enumerations import *
+from ..tags import *
 
 class PGPNewFormatLengthField(Field):
     def __init__(self, name, default):

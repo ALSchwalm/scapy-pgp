@@ -1,6 +1,6 @@
 from scapy.fields import *
 from scapy.packet import *
-from ..enumerations import *
+from ..tags import *
 from math import log2, ceil
 
 class PGPOldFormatLengthFormatField(BitEnumField):
