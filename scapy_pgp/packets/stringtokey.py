@@ -21,11 +21,11 @@ class PGPStringToKeyField(Packet):
 
     def extract_padding(self, s):
         if self.kind == 0:
-            return s[-1:], None
+            return s[:1], s[1:]
         elif self.kind == 1:
-            return s[-9:], None
+            return s[:9], s[9:]
         elif self.kind == 3:
-            return s[-10:], None
+            return s[:10], s[10:]
 
 class PGPSimpleStringToKey(Packet):
     fields_desc = [

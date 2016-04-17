@@ -67,5 +67,4 @@ class PGPNewFormatPacket(Packet):
         return PACKET_TAGS[PacketType(self.tag)]
 
     def extract_padding(self, s):
-        # There is no padding, and the payload is all the data
-        return s[-self.length:], None
+        return s[:self.length], None

@@ -99,4 +99,4 @@ class PGPOldFormatPacket(Packet):
         return PACKET_TAGS[PacketType(self.tag)]
 
     def extract_padding(self, s):
-        return s[-self.length:], None
+        return s[:self.length], None
