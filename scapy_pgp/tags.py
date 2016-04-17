@@ -15,5 +15,6 @@ TAG_STRINGS = {
 PACKET_TAGS = {
     PacketType.PGPPublicKeySessionKeyPacket : PGPPublicKeySessionKeyPacket,
     PacketType.PGPSymmetricKeySessionKeyPacket : PGPSymmetricKeySessionKeyPacket,
+    PacketType.PGPCompressedDataPacket : PGPCompressedDataPacket,
     PacketType.PGPLiteralDataPacket : PGPLiteralDataPacket
 }

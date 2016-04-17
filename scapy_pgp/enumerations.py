@@ -33,3 +33,10 @@ HASH_ALGORITHMS = {
     "SHA512"    : 10,
     "SHA224"    : 11
 }
+
+COMPRESSION_ALGORITHMS = {
+    "Uncompressed" : 0,
+    "ZIP" : 1,
+    "ZLIB" : 2,
+    "BZip2" : 3
+}
