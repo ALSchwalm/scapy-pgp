@@ -38,5 +38,5 @@ COMPRESSION_ALGORITHMS = {
     "Uncompressed" : 0,
     "ZIP" : 1,
     "ZLIB" : 2,
-    "BZip2" : 3
+    "BZIP2" : 3
 }
