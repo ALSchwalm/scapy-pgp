@@ -2,6 +2,11 @@ from scapy.fields import *
 from scapy.packet import *
 from ..enumerations import PUBLIC_KEY_ALGORITHMS
 
+def encrypted_session_key_length(pkt):
+    if pkt.underlayer.length is not None:
+        return pkt.underlayer.length-10
+    return 0
+
 class PGPPublicKeySessionKeyPacket(Packet):
     fields_desc = [
         ByteEnumField("version", 3, {"v1" : 1,
@@ -10,5 +15,5 @@ class PGPPublicKeySessionKeyPacket(Packet):
 
         LongField("key_id", None),
         ByteEnumField("pubkey_algorithm", None, PUBLIC_KEY_ALGORITHMS),
-        StrLenField("encrypted_key", "", length_from=lambda pkt:pkt.underlayer.length-10),
+        StrLenField("encrypted_key", "", length_from=encrypted_session_key_length),
     ]

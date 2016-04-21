@@ -1,46 +1,41 @@
 from scapy.fields import *
 from scapy.packet import *
+from .packetlist import PGPPacketList
 from ..enumerations import COMPRESSION_ALGORITHMS
 import zlib
 import bz2
 
 
+class PGPCompressedPacketList(PGPPacketList):
+    def __init__(self, name, default):
+        PGPPacketList.__init__(self, name, default)
+
+    def i2m(self, pkt, value):
+        contents = b"".join([bytes(p) for p in value])
+        if pkt.compression_algorithm == 0:
+            return contents
+        elif pkt.compression_algorithm == 1:
+            obj = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
+            obj.compress(contents)
+            return obj.flush()
+        elif pkt.compression_algorithm == 2:
+            return zlib.compress(contents)
+        elif pkt.compression_algorithm == 3:
+            return bz2.compress(contents)
+
+    def m2i(self, pkt, raw_value):
+        if pkt.compression_algorithm == 0:
+            return self.parse_packet_list(raw_value)
+        elif pkt.compression_algorithm == 1:
+            contents = zlib.decompress(raw_value, -15)
+        elif pkt.compression_algorithm == 2:
+            contents = zlib.decompress(raw_value)
+        elif pkt.compression_algorithm == 3:
+            contents = bz2.decompress(raw_value)
+        return self.parse_packet_list(contents)
+
 class PGPCompressedDataPacket(Packet):
     fields_desc = [
         ByteEnumField("compression_algorithm", "ZLIB", COMPRESSION_ALGORITHMS),
+        PGPCompressedPacketList("packets", None)
     ]
-
-    def extract_padding(self, s):
-        return s, None
-
-    def guess_payload_class(self, payload):
-        from .newformat import PGPNewFormatPacket
-        from .oldformat import PGPOldFormatPacket
-        if payload[0] & 0b01000000:
-            return PGPNewFormatPacket
-        else:
-            return PGPOldFormatPacket
-
-    def do_dissect_payload(self, payl):
-        if self.compression_algorithm == 0:
-            Packet.do_dissect_payload(self, payl)
-            return
-        elif self.compression_algorithm == 1:
-            payload = zlib.decompress(payl, -15)
-        elif self.compression_algorithm == 2:
-            payload = zlib.decompress(payl)
-        elif self.compression_algorithm == 3:
-            payload = bz2.decompress(payl)
-        Packet.do_dissect_payload(self, payload)
-
-    def do_build_payload(self):
-        if self.compression_algorithm == 0:
-            return self.payload.do_build()
-        elif self.compression_algorithm == 1:
-            obj = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
-            obj.compress(bytes(self.payload.do_build()))
-            return obj.flush()
-        elif self.compression_algorithm == 2:
-            return zlib.compress(bytes(self.payload.do_build()))
-        elif self.compression_algorithm == 3:
-            return bz2.compress(bytes(self.payload.do_build()))

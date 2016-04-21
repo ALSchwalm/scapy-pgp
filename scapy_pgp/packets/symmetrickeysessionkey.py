@@ -3,6 +3,12 @@ from scapy.packet import *
 from .stringtokey import PGPStringToKeyField
 from ..enumerations import SYMMETRIC_KEY_ALGORITHMS
 
+
+def encrypted_session_key_length(pkt):
+    if pkt.underlayer.length is not None:
+        return pkt.underlayer.length-2-len(bytes(pkt.session_key_parameters))
+    return 0
+
 class PGPSymmetricKeySessionKeyPacket(Packet):
     fields_desc = [
         ByteEnumField("version", 4, {"v1" : 1,
@@ -13,9 +19,6 @@ class PGPSymmetricKeySessionKeyPacket(Packet):
         PacketField("session_key_parameters", None, PGPStringToKeyField),
 
         # If there are any bytes left, they must be the encrypted session key
-        ConditionalField(
-            StrLenField("encrypted_session_key", "",
-                        length_from=lambda pkt:pkt.underlayer.length-2-len(bytes(pkt.session_key_parameters))),
-            lambda pkt:pkt.underlayer.length-2-len(bytes(pkt.session_key_parameters)) > 0
-        )
+        StrLenField("encrypted_session_key", None,
+                    length_from=encrypted_session_key_length)
     ]

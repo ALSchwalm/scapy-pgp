@@ -39,7 +39,7 @@ class PGPOldFormatLengthField(Field):
         if format == 0:
             return bytes([value])
         elif format == 1:
-            return bytes([ (value >> 8), value & 0xFF])
+            return bytes([(value >> 8), value & 0xFF])
         elif format == 2:
             return bytes([
                 (value >> 24) & 0xFF,
@@ -78,7 +78,7 @@ class PGPOldFormatLengthField(Field):
         elif pkt.length_format == 2:
             return s[4:], self.m2i(pkt, s[:4])
         elif pkt.length_format == 3:
-            return s, bytes([len(s)])
+            return s, len(s)
         assert(False)
 
 class PGPOldFormatPacket(Packet):
