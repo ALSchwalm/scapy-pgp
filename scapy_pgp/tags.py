@@ -7,6 +7,7 @@ class PacketType(IntEnum):
     PGPSymmetricKeySessionKeyPacket = 3
     PGPCompressedDataPacket = 8
     PGPLiteralDataPacket = 11
+    PGPSymmetricallyEncryptedMDCPacket = 18
 
 TAG_STRINGS = {
     m.name : m.value for m in PacketType
@@ -16,5 +17,6 @@ PACKET_TAGS = {
     PacketType.PGPPublicKeySessionKeyPacket : PGPPublicKeySessionKeyPacket,
     PacketType.PGPSymmetricKeySessionKeyPacket : PGPSymmetricKeySessionKeyPacket,
     PacketType.PGPCompressedDataPacket : PGPCompressedDataPacket,
-    PacketType.PGPLiteralDataPacket : PGPLiteralDataPacket
+    PacketType.PGPLiteralDataPacket : PGPLiteralDataPacket,
+    PacketType.PGPSymmetricallyEncryptedMDCPacket : PGPSymmetricallyEncryptedMDCPacket
 }
